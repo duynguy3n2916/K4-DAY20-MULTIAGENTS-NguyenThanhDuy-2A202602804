@@ -14,4 +14,41 @@ def get_subagents() -> list[dict]:
       "system_prompt": chỉ dẫn cho subagent
     Gợi ý vai trò: explorer (đọc và báo cáo), implementer (thực hiện), reviewer (kiểm tra độc lập).
     """
-    raise NotImplementedError("TODO: cài đặt get_subagents (xem guides/pseudocode/02_subagents.md)")
+    return [
+        {
+            "name": "explorer",
+            "description": (
+                "Use when a task needs investigation before editing: read the instructions, "
+                "documentation, tests, and sample data, then report relevant rules and likely causes."
+            ),
+            "system_prompt": (
+                "You investigate the workspace and report evidence, constraints, and likely root causes. "
+                "Read relevant files and inspect edge cases. Do not modify files. "
+                "Only use the task details supplied by the parent agent."
+            ),
+        },
+        {
+            "name": "implementer",
+            "description": (
+                "Use when the task requires changing code or creating requested output files "
+                "after the requirements and target paths are known."
+            ),
+            "system_prompt": (
+                "You implement the delegated task in the workspace. Follow every rule and path "
+                "in the delegation, make the smallest complete change, run relevant checks, "
+                "and report exactly which files changed and what the checks showed."
+            ),
+        },
+        {
+            "name": "reviewer",
+            "description": (
+                "Use when completed work needs an independent check against the instructions, "
+                "tests, data conventions, and edge cases before the parent agent finishes."
+            ),
+            "system_prompt": (
+                "You independently verify the delegated work. Inspect outputs and run relevant "
+                "checks without editing files. Report concrete failures and supporting evidence; "
+                "do not claim success for checks you did not perform."
+            ),
+        },
+    ]

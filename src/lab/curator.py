@@ -4,10 +4,12 @@ Pseudo-code: guides/pseudocode/04_curator.md
 Kiểm tra:    pytest tests/test_04_curator.py
 Chạy thật:   python -m lab.curator
 """
+import json
 import re
 from pathlib import Path
 
-from .tasks import eval_markers   # có sẵn: định danh của tác vụ đánh giá, tính lúc chạy
+from .model import make_model
+from .tasks import ROOT, eval_markers   # có sẵn: định danh của tác vụ đánh giá, tính lúc chạy
 
 # ---- CÓ SẴN, KHÔNG SỬA: kiểm tra và tách khối skill (phần dễ sai và liên quan bảo mật) ----------------
 SAFE_NAME = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
@@ -68,7 +70,53 @@ def curate_skills(results_dir="results", source_condition="baseline", out_dir=No
     model mặc định: make_model() (lab.model).
     Trả về: danh sách đường dẫn SKILL.md đã ghi.
     """
-    raise NotImplementedError("TODO: cài đặt curate_skills (xem guides/pseudocode/04_curator.md)")
+    destination = Path(out_dir) if out_dir is not None else ROOT / "skills" / "auto"
+    examples = []
+    for run_file in sorted((Path(results_dir) / source_condition).glob("*/run.json")):
+        run = json.loads(run_file.read_text(encoding="utf-8"))
+        if run.get("role") != "learn":
+            continue
+        failed = [
+            (check.get("name", ""), check.get("detail", ""))
+            for check in run.get("checks", []) if not check.get("passed")
+        ]
+        if not failed:
+            continue
+        trace_file = run_file.with_name("trace.md")
+        trace = trace_file.read_text(encoding="utf-8")[-6000:] if trace_file.exists() else ""
+        feedback = "\n".join(f"- {name}: {detail}" for name, detail in failed)
+        examples.append(f"Learning task: {run.get('task', run_file.parent.name)}\nFailed checks:\n{feedback}\nTrace tail:\n{trace}")
+
+    if not examples:
+        print("No failed checks in learning tasks; no skills created.")
+        return []
+
+    prompt = (
+        "Write SKILL.md files for an engineering agent from the learning task failures below. "
+        f"Produce at most {max_skills} short, reusable skills for NEW tasks of the same kinds. "
+        "Infer general procedures from the feedback; never copy task identifiers, source file names, "
+        "specific answers, or numbers from an example. Do not invent evaluation task details. "
+        "Each skill must have YAML frontmatter with a lower-case hyphenated name and a one-sentence "
+        "description beginning 'Use when', followed by no more than 40 lines of actionable instructions. "
+        "Return only blocks in exactly this format:\n"
+        "=== SKILL: <name> ===\n---\nname: <name>\ndescription: Use when ...\n---\n"
+        "1. <instruction>\n=== END ===\n\n"
+        + "\n\n".join(examples)
+    )
+    reply = (model if model is not None else make_model()).invoke(prompt).content
+    written = []
+    for name, content in parse_skill_blocks(str(reply)):
+        if len(written) >= max_skills:
+            break
+        problems = validate_skill(content, expected_name=name)
+        if problems:
+            print(f"Skipping invalid skill {name!r}: {', '.join(problems)}")
+            continue
+        skill_file = destination / name / "SKILL.md"
+        skill_file.parent.mkdir(parents=True, exist_ok=True)
+        skill_file.write_text(content + "\n", encoding="utf-8")
+        written.append(skill_file)
+    return written
 
 
 if __name__ == "__main__":
