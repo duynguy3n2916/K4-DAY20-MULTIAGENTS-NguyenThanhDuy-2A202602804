@@ -1,0 +1,64 @@
+{
+  "task": "data-learn",
+  "condition": "skills-auto",
+  "role": "learn",
+  "timestamp": "2026-10-06T13:43:08.915036+00:00",
+  "error": "GraphRecursionError: Recursion limit of 60 reached without hitting a stop condition. You can increase the limit by setting the `recursion_limit` config key.\nFor troubleshooting, visit: https://docs.langchain.com/oss/python/langgraph/errors/GRAPH_RECURSION_LIMIT",
+  "skills_sha256": "37684576c625c3037b8e7b20ee5463ec5b738fd2ac815de34ae370e55b72eb0f",
+  "seconds": 158.4,
+  "tokens": {
+    "input": 341395,
+    "output": 7410,
+    "total": 348805
+  },
+  "tool_calls": 0,
+  "subagent_calls": 0,
+  "skills_read": 0,
+  "skills_modified": false,
+  "final_message": "",
+  "score": 0.0,
+  "passed": 0,
+  "total": 8,
+  "checks": [
+    {
+      "name": "north_q1_revenue",
+      "passed": false,
+      "detail": "FileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\Acer\\\\AppData\\\\Local\\\\Temp\\\\lab-agent-90cp73r1\\\\workspace\\\\answer.json'"
+    },
+    {
+      "name": "north_q1_orders",
+      "passed": false,
+      "detail": "FileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\Acer\\\\AppData\\\\Local\\\\Temp\\\\lab-agent-90cp73r1\\\\workspace\\\\answer.json'"
+    },
+    {
+      "name": "top_region",
+      "passed": false,
+      "detail": "FileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\Acer\\\\AppData\\\\Local\\\\Temp\\\\lab-agent-90cp73r1\\\\workspace\\\\answer.json'"
+    },
+    {
+      "name": "missing_amount_orders",
+      "passed": false,
+      "detail": "FileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\Acer\\\\AppData\\\\Local\\\\Temp\\\\lab-agent-90cp73r1\\\\workspace\\\\answer.json'"
+    },
+    {
+      "name": "duplicate_rows_removed",
+      "passed": false,
+      "detail": "FileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\Acer\\\\AppData\\\\Local\\\\Temp\\\\lab-agent-90cp73r1\\\\workspace\\\\answer.json'"
+    },
+    {
+      "name": "rule_money_in_cents",
+      "passed": false,
+      "detail": "FileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\Acer\\\\AppData\\\\Local\\\\Temp\\\\lab-agent-90cp73r1\\\\workspace\\\\answer.json'"
+    },
+    {
+      "name": "rule_meta_block",
+      "passed": false,
+      "detail": "FileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\Acer\\\\AppData\\\\Local\\\\Temp\\\\lab-agent-90cp73r1\\\\workspace\\\\answer.json'"
+    },
+    {
+      "name": "rule_clean_csv",
+      "passed": false,
+      "detail": "RULE: write workspace/clean.csv with the header order_id,timestamp_utc,region,amount_cents; one row per distinct order with a known amount; timestamp_utc as YYYY-MM-DDTHH:MM:SSZ (UTC); region in canonical spelling (North, South, East, West); amount in integer cents."
+    }
+  ]
+}

@@ -54,11 +54,20 @@ def make_backend(sandbox: Path):
       - Tác tử chạy được lệnh shell và gọi được `python` (cần đặt PATH).
       - KHÔNG chuyển biến môi trường của bạn vào shell của tác tử (khóa API không được lộ).
     """
+    path_dirs = [str(Path(sys.executable).parent)]
+    if sys.platform == "win32":
+        for git_usr in (Path("C:/Program Files/Git/usr/bin"), Path("C:/Program Files (x86)/Git/usr/bin")):
+            if git_usr.exists():
+                path_dirs.append(str(git_usr))
+                break
+    path_dirs.extend(["/usr/local/bin", "/usr/bin", "/bin"])
     env = {
-        "PATH": os.pathsep.join((str(Path(sys.executable).parent), "/usr/local/bin", "/usr/bin", "/bin")),
+        "PATH": os.pathsep.join(path_dirs),
         "HOME": str(sandbox),
         "PYTHONDONTWRITEBYTECODE": "1",
     }
+    if sys.platform == "win32":
+        env["PATHEXT"] = ".COM;.EXE;.BAT;.CMD"
     return LocalShellBackend(
         root_dir=sandbox,
         virtual_mode=True,
